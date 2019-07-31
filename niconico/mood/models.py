@@ -11,9 +11,9 @@ class MoodChoice(Enum):
 
 
 class Mood(models.Model):
-    created_at = models.DateTimeField(auto_now_add=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    mood = models.IntegerField(choices=[(tag, tag.value) for tag in MoodChoice])
+    mood = models.IntegerField(choices=[(tag.value, tag.name) for tag in MoodChoice])
     message = models.CharField(max_length=255)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE
