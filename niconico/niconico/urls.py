@@ -6,6 +6,6 @@ from mood import views
 
 # Create a rest framework router
 router = DefaultRouter()
-router.register(r"moods", views.MoodViewSet)
+router.register(r"moods", views.MoodViewSet, base_name="Mood")
 
 urlpatterns = [path("api/", include(router.urls)), path("admin/", admin.site.urls)]
