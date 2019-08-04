@@ -7,11 +7,16 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from mood.models import Mood, MoodChoice
-from mood.serializers import MoodSerializer
+from .models import Mood, MoodChoice
+from .permissions import IsOwnerOrReadOnly
+from .serializers import MoodSerializer
 
 
 class MoodViewSet(viewsets.ModelViewSet):
+    paginator = None
+    serializer_class = MoodSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+
     def get_queryset(self):
         week = [timezone.localdate() - timedelta(days=i) for i in range(7)]
 
@@ -42,6 +47,3 @@ class MoodViewSet(viewsets.ModelViewSet):
         qs = Mood.objects.filter(created_at__in=last_dates)
         return qs.order_by("created_at")
 
-    # Get days for the past week
-    paginator = None
-    serializer_class = MoodSerializer
