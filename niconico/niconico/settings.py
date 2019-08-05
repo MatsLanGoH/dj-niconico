@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "knox",
 ]
 
 PROJECT_APPS = ["mood.apps.MoodConfig"]
@@ -127,4 +128,7 @@ STATIC_URL = "/static/"
 #    "http://127.0.0.1:3000",
 # ]
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Rest Framework settings
+REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",)}
 

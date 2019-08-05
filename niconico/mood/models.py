@@ -17,8 +17,11 @@ class Mood(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     mood = models.IntegerField(choices=[(tag.value, tag.name) for tag in MoodChoice])
     message = models.CharField(max_length=255)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="moods",
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
