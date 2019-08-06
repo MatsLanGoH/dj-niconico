@@ -132,3 +132,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Rest Framework settings
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",)}
 
+
+REST_KNOW = {"USER_SERIALIZER": "knox.serializers.UserSerializer"}
+
