@@ -42,3 +42,11 @@ class LoginAPI(KnoxLoginView):
         user = serializer.validated_data["user"]
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
+
+
+class UserAPI(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
