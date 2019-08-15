@@ -128,10 +128,9 @@ STATIC_URL = "/static/"
 #    "http://127.0.0.1:3000",
 # ]
 CORS_ORIGIN_ALLOW_ALL = True
+APPEND_SLASH = False
 
 # Rest Framework settings
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",)}
 
-
-REST_KNOW = {"USER_SERIALIZER": "knox.serializers.UserSerializer"}
-
+REST_KNOX = {"USER_SERIALIZER": "knox.serializers.UserSerializer"}

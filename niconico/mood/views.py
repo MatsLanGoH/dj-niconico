@@ -24,7 +24,8 @@ class MoodViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        week = [timezone.localdate() - timedelta(days=i) for i in range(7)]
+        week = [timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=i) for i in
+                range(7)]
 
         # qs = Mood.objects.filter(created_at__gte=min(week))
         user_mood_qs = self.request.user.moods.all()
@@ -34,11 +35,11 @@ class MoodViewSet(viewsets.ModelViewSet):
         # Hacky solution to avoid duplicate entries created for the latest date
         # TODO: Rather find a way to handle missing dates on the frontend?
         valid_days = [m.created_at.date() for m in qs]
-        missing_days = [i for i, d in enumerate(week) if d not in valid_days and i > 0]
+        missing_days = [i for i, d in enumerate(week) if d.date() not in valid_days and i > 0]
 
         Mood.objects.bulk_create(
             Mood(
-                created_at=timezone.now() - timedelta(days=day),
+                created_at=timezone.localtime() - timedelta(days=day),
                 mood=MoodChoice.UNSET.value,
                 message="Auto value for unset day: {}".format(day),
                 owner=self.request.user,
@@ -49,12 +50,11 @@ class MoodViewSet(viewsets.ModelViewSet):
         # Retrieve last object per day
         last_per_day = (
             self.request.user.moods.all()
-            .filter(created_at__gte=min(week))
-            .extra(select={"date": "date(created_at)"})
-            .values_list("date")
-            .annotate(max_date=Max("created_at"))
+                .filter(created_at__gte=min(week))
+                .extra(select={"date": "date(created_at)"})
+                .values_list("date")
+                .annotate(max_date=Max("created_at"))
         )
         last_dates = [item[1] for item in last_per_day]
         qs = self.request.user.moods.all().filter(created_at__in=last_dates)
         return qs.order_by("created_at")
-
