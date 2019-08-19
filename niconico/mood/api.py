@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
+from knox.views import LogoutView as KnoxLogoutView
 
 from .models import Mood
 from .serializers import (
@@ -42,6 +43,10 @@ class LoginAPI(KnoxLoginView):
         user = serializer.validated_data["user"]
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
+
+
+class LogoutAPI(KnoxLogoutView):
+    pass
 
 
 class UserAPI(generics.RetrieveAPIView):
