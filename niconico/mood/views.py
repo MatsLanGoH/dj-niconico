@@ -23,7 +23,7 @@ class MoodViewSet(viewsets.ModelViewSet):
         week = [
             timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
             - timedelta(days=i + 1)
-            for i in range(7)
+            for i in range(31)
         ]
 
         # qs = Mood.objects.filter(created_at__gte=min(week))
