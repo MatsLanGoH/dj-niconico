@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "knox",
 ]
 
-PROJECT_APPS = ["mood.apps.MoodConfig"]
+PROJECT_APPS = ["mood.apps.MoodConfig", "team.apps.TeamConfig"]
 
 INSTALLED_APPS += PROJECT_APPS
 

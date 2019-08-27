@@ -3,6 +3,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from team.models import Membership
+
 
 # Define possible mood choices
 class MoodChoice(Enum):
@@ -23,7 +25,7 @@ class Mood(models.Model):
         null=True,
         on_delete=models.CASCADE,
     )
+    membership = models.ForeignKey(Membership, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f'<{self.id}><{self.created_at}> {MoodChoice(self.mood).name} "{self.message}"'
-
+        return f'<{self.pk}><{self.created_at}> {MoodChoice(self.mood).name} "{self.message}"'
