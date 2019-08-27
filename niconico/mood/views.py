@@ -27,7 +27,7 @@ class MoodViewSet(viewsets.ModelViewSet):
         ]
 
         # qs = Mood.objects.filter(created_at__gte=min(week))
-        user_mood_qs = self.request.user.moods.all()
+        user_mood_qs = self.request.user.moods.filter(membership__isnull=True)
         qs = user_mood_qs.filter(created_at__gte=min(week))
 
         # Find missing dates and create unset moods instances for them
@@ -50,14 +50,18 @@ class MoodViewSet(viewsets.ModelViewSet):
 
         # Retrieve last object per day
         last_per_day = (
-            self.request.user.moods.all()
+            self.request.user.moods.filter(membership__isnull=True)
             .filter(created_at__gte=min(week))
-            .extra(select={"date": "date(created_at, '+9 hours')"})  # Adjust for JST timezone
+            .extra(
+                select={"date": "date(created_at, '+9 hours')"}
+            )  # Adjust for JST timezone
             .values_list("date")
             .annotate(max_date=Max("created_at"))
         )
         last_dates = [item[1] for item in last_per_day]
-        qs = self.request.user.moods.all().filter(created_at__in=last_dates)
+        qs = self.request.user.moods.filter(membership__isnull=True).filter(
+            created_at__in=last_dates
+        )
 
         # Combine actual Moods with filler instances, sort by date and return
         combined_moods = sorted(list(qs) + unset_moods, key=lambda m: m.created_at)
