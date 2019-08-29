@@ -1,7 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils.timezone import localtime
+from rest_framework import serializers
 
 from .models import Mood
 
@@ -12,14 +12,16 @@ class MoodSerializer(serializers.HyperlinkedModelSerializer):
     # mood = serializers.ReadOnlyField()
     # message = serializers.ReadOnlyField()
     # created_at = serializers.DateTimeField()
-    timestamp = serializers.SerializerMethodField("get_timestamp")
-    date = serializers.SerializerMethodField("get_date")
+    timestamp = serializers.SerializerMethodField("get_timestamp", required=False)
+    date = serializers.SerializerMethodField("get_date", required=False)
 
     def get_timestamp(self, obj):
-        return obj.created_at.timestamp()
+        if obj.created_at:
+            return obj.created_at.timestamp()
+        return None
 
     def get_date(self, obj):
-        return localtime(obj.created_at).date()
+        return localtime(obj.created_at).date() or None
 
     class Meta:
         model = Mood
@@ -51,6 +53,8 @@ class LoginUserSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    moods = MoodSerializer(many=True, required=False)
+
     class Meta:
         model = User
-        fields = ("id", "username")
+        fields = ("id", "username", "moods")

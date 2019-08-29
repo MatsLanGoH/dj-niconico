@@ -1,10 +1,13 @@
+import logging
 from datetime import timedelta
 
-import logging
-from django.utils import timezone
 from django.db.models import Max
+from django.utils import timezone
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
+from team.models import Membership, Team
 from .models import Mood, MoodChoice
 from .serializers import MoodSerializer
 
@@ -66,3 +69,40 @@ class MoodViewSet(viewsets.ModelViewSet):
         # Combine actual Moods with filler instances, sort by date and return
         combined_moods = sorted(list(qs) + unset_moods, key=lambda m: m.created_at)
         return combined_moods
+
+
+class GetTeamView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MoodSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # TODO: Get Team from somewhere
+        team = 1
+        qs = self.request.user.teams.filter(pk=team)
+        breakpoint()
+        return qs
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_mood_list(request):
+    """List all moods
+    """
+    moods = Mood.objects.all()
+    serializer = MoodSerializer(moods, many=True)
+    return Response(serializer.data)
+
+
+class GetMembershipView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MoodSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # TODO: Get Team from somewhere
+        # Returns all moods for a given membership
+        membership = Membership.objects.filter(
+            member=self.request.user, team=Team.objects.first()
+        ).first()
+
+        qs = Mood.objects.filter(membership=membership)
+        return qs
