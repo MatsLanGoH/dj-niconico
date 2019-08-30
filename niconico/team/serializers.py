@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from mood.serializers import UserSerializer
-from .models import Team, Membership
+from mood.serializers import UserMoodSerializer, UserSerializer
+from .models import Membership, Team
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -10,7 +10,11 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ("name", "owner", "members")
+        fields = ("id", "name", "owner", "members")
+
+
+class TeamMoodSerializer(TeamSerializer):
+    members = UserMoodSerializer(many=True)
 
 
 class MembershipSerializer(serializers.ModelSerializer):

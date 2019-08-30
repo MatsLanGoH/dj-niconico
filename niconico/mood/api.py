@@ -1,19 +1,12 @@
 from django.contrib.auth import login
-from rest_framework import viewsets, permissions, generics
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.response import Response
-
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
+from rest_framework import generics, permissions
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.response import Response
 
-from .models import Mood
-from .serializers import (
-    MoodSerializer,
-    CreateUserSerializer,
-    LoginUserSerializer,
-    UserSerializer,
-)
+from .serializers import CreateUserSerializer, LoginUserSerializer, UserSerializer
 
 
 class RegistrationAPI(generics.GenericAPIView):

@@ -4,7 +4,6 @@ from datetime import timedelta
 from django.db.models import Max
 from django.utils import timezone
 from rest_framework import viewsets
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -77,34 +76,13 @@ class MoodViewSet(viewsets.ModelViewSet):
         return user.moods.all()
 
 
-class GetTeamView(viewsets.ReadOnlyModelViewSet):
-    serializer_class = MoodSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        # TODO: Get Team from somewhere
-        team = 1
-        qs = self.request.user.teams.filter(pk=team)
-        breakpoint()
-        return qs
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_mood_list(request):
-    """List all moods
-    """
-    moods = Mood.objects.all()
-    serializer = MoodSerializer(moods, many=True)
-    return Response(serializer.data)
-
-
 class GetMembershipView(viewsets.ReadOnlyModelViewSet):
     serializer_class = MoodSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # TODO: Get Team from somewhere
+        # TODO: May be h
         # Returns all moods for a given membership
         membership = Membership.objects.filter(
             member=self.request.user, team=Team.objects.first()
