@@ -10,7 +10,7 @@ from .serializers import MembershipSerializer, TeamMoodSerializer, TeamSerialize
 logger = logging.getLogger(__name__)
 
 
-class TeamViewSet(viewsets.ReadOnlyModelViewSet):
+class TeamViewSet(viewsets.ModelViewSet):
     """Get teams for user if user is authenticated
     """
 
@@ -18,8 +18,22 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TeamSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+        """Only team owners can delete a team
+        TODO: Transfer ownership
+        """
+        user = self.request.user
+        teams = user.managed_teams.all()
+        team = get_object_or_404(teams, pk=pk)
+        team.delete()
+        return Response()
+
     def retrieve(self, request, pk=None, *args, **kwargs):
         """Team detail view
+        # TODO: Get managed teams!
         """
         user = self.request.user
         teams = user.teams.all()

@@ -42,5 +42,3 @@ GET | /api/teams/{UUID}/moods/ | Shows moodboard for team if logged in user is m
 GET | /api/teams/{UUID}/members/ | Shows team members if logged in user is member or owner
 PUT | /api/teams/{UUID}/members/{member_id}/ | Update member status (approve/reject/delete if owner), (delete if self) 
 
-
-
