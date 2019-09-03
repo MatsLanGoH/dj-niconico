@@ -69,3 +69,17 @@ class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = MembershipSerializer(membership)
             return Response(serializer.data)
         return Response(data={"error": "no membership found"}, status=404)
+
+    @action(methods=["PUT"], detail=True, url_path="suspend", url_name="suspend")
+    def suspend_user(self, request, pk=None):
+        """ Suspend a membership
+        TODO: Refactor
+        """
+        user = self.request.user
+        membership = get_object_or_404(Membership, pk=pk)
+        if membership and membership.team.owner == user:
+            membership.status = MembershipStatus.SUSPENDED.value
+            membership.save()
+            serializer = MembershipSerializer(membership)
+            return Response(serializer.data)
+        return Response(data={"error": "no membership found"}, status=404)
