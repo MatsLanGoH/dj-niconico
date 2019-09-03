@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import localtime
 from rest_framework import serializers
 
+from team.models import MembershipStatus
 from .models import Mood
 
 
@@ -77,16 +78,25 @@ class UserMoodSerializer(serializers.ModelSerializer):
 
 
 class UserMoodExtraSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField(source="get_status")
     moods = serializers.SerializerMethodField(source="get_moods")
+
+    def get_status(self, obj):
+        membership = obj.memberships.filter(team_id=self.context["team"].id).first()
+        return membership.get_status_display()
 
     def get_moods(self, obj):
         return MoodSerializer(
             # TODO:  use repository instead
-            obj.moods.filter(membership__team=self.context["membership"].id),
+            obj.moods.filter(
+                membership__team=self.context["team"].id,
+                membership__status=MembershipStatus.ACTIVE.value,
+            ),
             read_only=True,
             many=True,
         ).data
 
     class Meta:
         model = User
-        fields = ("id", "username", "moods")
+        fields = ("id", "username", "status", "moods")
+        read_only_fields = ("id", "username", "status", "moods")

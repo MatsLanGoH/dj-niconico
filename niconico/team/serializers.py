@@ -20,7 +20,7 @@ class TeamMoodSerializer(serializers.ModelSerializer):
 
     def get_members(self, obj):
         return UserMoodExtraSerializer(
-            obj.members.all(), many=True, read_only=True, context={"membership": obj}
+            obj.members.all(), many=True, read_only=True, context={"team": obj}
         ).data
 
     class Meta:
