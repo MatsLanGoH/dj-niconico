@@ -3,7 +3,6 @@ from django.db import models
 
 
 class Team(models.Model):
-    # TODO: Create Team Owner
     name = models.CharField(max_length=128)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

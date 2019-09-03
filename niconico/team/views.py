@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 class TeamViewSet(viewsets.ModelViewSet):
     """Get teams for user if user is authenticated
+    TODO: Allow owners to transfer ownership
+    TODO: Use "TeamRelations" (MembershipTeams) to allow users to see
+         teams of which they are members of
     """
 
     paginator = None
@@ -36,7 +39,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         # TODO: Get managed teams!
         """
         user = self.request.user
-        teams = user.teams.all()
+        teams = user.managed_teams.all()
         team = get_object_or_404(teams, pk=pk)
 
         # TODO: Can we group these by dates??
@@ -45,7 +48,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return user.teams.all()
+        return user.managed_teams.all()
 
 
 class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
