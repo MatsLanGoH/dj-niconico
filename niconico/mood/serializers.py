@@ -14,8 +14,8 @@ class MoodSerializer(serializers.HyperlinkedModelSerializer):
     # message = serializers.ReadOnlyField()
     # created_at = serializers.DateTimeField()
     team = serializers.IntegerField(source="membership.team_id", required=False)
-    timestamp = serializers.SerializerMethodField("get_timestamp", required=False)
-    date = serializers.SerializerMethodField("get_date", required=False)
+    timestamp = serializers.SerializerMethodField(required=False)
+    date = serializers.SerializerMethodField(required=False)
 
     def get_timestamp(self, obj):
         if obj.created_at:
@@ -69,6 +69,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username")
 
 
+class UserStatusSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        membership = obj.memberships.filter(team_id=self.context["team"].id).first()
+        return membership.get_status_display()
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "status")
+
+
 class UserMoodSerializer(serializers.ModelSerializer):
     moods = MoodSerializer(many=True, required=True)
 
@@ -78,8 +90,8 @@ class UserMoodSerializer(serializers.ModelSerializer):
 
 
 class UserMoodExtraSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField(source="get_status")
-    moods = serializers.SerializerMethodField(source="get_moods")
+    status = serializers.SerializerMethodField()
+    moods = serializers.SerializerMethodField()
 
     def get_status(self, obj):
         membership = obj.memberships.filter(team_id=self.context["team"].id).first()
