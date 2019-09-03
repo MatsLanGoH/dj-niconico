@@ -74,3 +74,18 @@ class UserMoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "moods")
+
+
+class UserMoodExtraSerializer(serializers.ModelSerializer):
+    moods = serializers.SerializerMethodField(source="get_moods")
+
+    def get_moods(self, obj):
+        return MoodSerializer(
+            obj.moods.filter(membership__team=self.context["membership"].id),
+            read_only=True,
+            many=True,
+        ).data
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "moods")

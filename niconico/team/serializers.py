@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from mood.serializers import UserMoodSerializer, UserSerializer
+from mood.serializers import UserMoodExtraSerializer, UserSerializer
 from .models import Membership, Team
 
 
@@ -15,8 +15,18 @@ class TeamSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "members"]
 
 
-class TeamMoodSerializer(TeamSerializer):
-    members = UserMoodSerializer(many=True)
+class TeamMoodSerializer(serializers.ModelSerializer):
+    members = serializers.SerializerMethodField(source="get_members")
+
+    def get_members(self, obj):
+        return UserMoodExtraSerializer(
+            obj.members.all(), many=True, read_only=True, context={"membership": obj}
+        ).data
+
+    class Meta:
+        model = Team
+        fields = ["id", "name", "owner", "members"]
+        read_only_fields = ["id", "members"]
 
 
 class MembershipSerializer(serializers.ModelSerializer):

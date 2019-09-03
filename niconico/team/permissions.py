@@ -11,6 +11,7 @@ class IsActiveUser(BasePermission):
         pk = request.parser_context["kwargs"]["pk"]
         membership = Membership.objects.get(pk=pk)
 
+        # TODO: This seems borked
         return bool(
             request.user
             and request.user.is_authenticated
