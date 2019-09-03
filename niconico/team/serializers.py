@@ -20,6 +20,9 @@ class TeamMoodSerializer(TeamSerializer):
 
 
 class MembershipSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        return Membership(**validated_data)
+
     class Meta:
         model = Membership
         fields = ("team", "member")

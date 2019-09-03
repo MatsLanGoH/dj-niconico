@@ -8,9 +8,9 @@ from team.views import MembershipViewSet, TeamViewSet
 
 # Create a rest framework router
 router = DefaultRouter()
-router.register(r"moods", MoodViewSet, base_name="Mood")
-router.register(r"memberships", MembershipViewSet, base_name="Membership")
-router.register(r"teams", TeamViewSet, base_name="Team")
+router.register(r"moods", MoodViewSet, base_name="mood")
+router.register(r"memberships", MembershipViewSet, base_name="membership")
+router.register(r"teams", TeamViewSet, base_name="team")
 
 urlpatterns = [
     path("api/", include(router.urls)),

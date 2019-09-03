@@ -1,8 +1,11 @@
 import logging
 
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from .models import Membership
+from .models import Membership, Team
 from .serializers import MembershipSerializer, TeamSerializer
 
 logger = logging.getLogger(__name__)
@@ -18,6 +21,20 @@ class TeamViewSet(viewsets.ModelViewSet):
     paginator = None
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TeamSerializer
+
+    @action(methods=["POST"], detail=True, url_path="join-team", url_name="join-team")
+    def join_team(self, request, pk=None):
+        """ Join a team
+        TODO: Set join status to probational status
+        """
+        user = self.request.user
+        teams = Team.objects.all()
+        team = get_object_or_404(teams, pk=pk)
+        membership = Membership(team=team, member=user)
+        membership.save()
+
+        serializer = MembershipSerializer(membership)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
