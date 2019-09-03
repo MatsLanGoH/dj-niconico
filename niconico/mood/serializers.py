@@ -12,6 +12,7 @@ class MoodSerializer(serializers.HyperlinkedModelSerializer):
     # mood = serializers.ReadOnlyField()
     # message = serializers.ReadOnlyField()
     # created_at = serializers.DateTimeField()
+    team = serializers.IntegerField(source="membership.team_id", required=False)
     timestamp = serializers.SerializerMethodField("get_timestamp", required=False)
     date = serializers.SerializerMethodField("get_date", required=False)
 
@@ -25,7 +26,16 @@ class MoodSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Mood
-        fields = ("id", "mood", "message", "created_at", "timestamp", "owner", "date")
+        fields = (
+            "id",
+            "mood",
+            "message",
+            "created_at",
+            "timestamp",
+            "owner",
+            "team",
+            "date",
+        )
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -59,7 +69,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserMoodSerializer(serializers.ModelSerializer):
-    moods = MoodSerializer(many=True, required=False)
+    moods = MoodSerializer(many=True, required=True)
 
     class Meta:
         model = User

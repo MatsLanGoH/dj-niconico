@@ -5,8 +5,10 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from mood.serializers import MoodSerializer
 from .models import Membership, MembershipStatus, Team
-from .serializers import MembershipSerializer, TeamSerializer
+from .permissions import IsActiveUser
+from .serializers import MembershipSerializer, TeamMoodSerializer, TeamSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,32 @@ class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
     paginator = None
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MembershipSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="add_mood",
+        url_name="add_mood",
+        permission_classes=[IsActiveUser],
+    )
+    def add_mood(self, request, pk=None, *args, **kwargs):
+        user = self.request.user
+        serializer = MoodSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(owner=user, membership_id=pk)
+            return Response(serializer.data)
+
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        """Get Team overview for the membership
+        TODO: Sort out architecture
+        """
+        user = self.request.user
+        memberships = user.memberships.all()
+        membership = get_object_or_404(memberships, pk=pk)
+        serializer = TeamMoodSerializer(
+            membership.team
+        )  # TODO: Right now this returns ALL moods
+        return Response(serializer.data)
 
     def get_queryset(self):
         memberships = Membership.objects.all()
