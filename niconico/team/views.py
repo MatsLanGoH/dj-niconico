@@ -54,6 +54,22 @@ class TeamViewSet(viewsets.ModelViewSet):
             serializer.save(owner=user, membership=membership)
             return Response(serializer.data)
 
+    @action(
+        methods=["GET"],
+        detail=True,
+        url_path="overview",
+        url_name="overview",
+        permission_classes=[IsActiveUser],  # TODO: Or TeamOwner user
+    )
+    def get_overview(self, request, pk=None, *args, **kwargs):
+        """Get Team overview
+        TODO: Sort out architecture
+        """
+        user = self.request.user
+        team = get_object_or_404(Team, pk=pk)
+        serializer = TeamMoodSerializer(team)
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -69,18 +85,6 @@ class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
     paginator = None
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MembershipSerializer
-
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        """Get Team overview for the membership
-        TODO: Sort out architecture
-        """
-        user = self.request.user
-        memberships = user.memberships.all()
-        membership = get_object_or_404(memberships, pk=pk)
-        serializer = TeamMoodSerializer(
-            membership.team
-        )  # TODO: Right now this returns ALL moods
-        return Response(serializer.data)
 
     def get_queryset(self):
         memberships = Membership.objects.all()
