@@ -40,5 +40,8 @@ class Membership(models.Model):
     )
 
     def __str__(self):
-        as_string = f"ID: {self.id}, Team: {self.team_id}, Member: {self.member_id}: {self.member} ({self.status})"
+        as_string = (
+            f"ID: {self.id}, Team: {self.team_id}, "
+            f"Member: {self.member_id}: {self.member} ({self.get_status_display()})"
+        )
         return as_string

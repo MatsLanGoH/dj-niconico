@@ -20,9 +20,11 @@ class TeamMoodSerializer(TeamSerializer):
 
 
 class MembershipSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display")
+
     def create(self, validated_data):
         return Membership(**validated_data)
 
     class Meta:
         model = Membership
-        fields = ("team", "member")
+        fields = ("id", "team", "member", "status")
