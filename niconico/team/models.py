@@ -1,3 +1,5 @@
+from enum import Enum, auto
+
 from django.conf import settings
 from django.db import models
 
@@ -22,13 +24,21 @@ class Team(models.Model):
         return as_string
 
 
+class MembershipStatus(Enum):
+    PENDING = auto()  # New members (need to be approved)
+    ACTIVE = auto()  # Active (after approval)
+    SUSPENDED = auto()  # Suspended (in case admin suspends)
+
+
 class Membership(models.Model):
-    # TODO: Add application status!
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     member = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="memberships", on_delete=models.CASCADE
     )
+    status = models.IntegerField(
+        choices=[(tag.value, tag.name) for tag in MembershipStatus]
+    )
 
     def __str__(self):
-        as_string = f"ID: {self.id}, Team: {self.team_id}: {self.team}, Member: {self.member_id}: {self.member}"
+        as_string = f"ID: {self.id}, Team: {self.team_id}, Member: {self.member_id}: {self.member} ({self.status})"
         return as_string

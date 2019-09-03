@@ -22,7 +22,7 @@ class TeamViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TeamSerializer
 
-    @action(methods=["POST"], detail=True, url_path="join-team", url_name="join-team")
+    @action(methods=["POST"], detail=True, url_path="join", url_name="join")
     def join_team(self, request, pk=None):
         """ Join a team
         TODO: Set join status to probational status
