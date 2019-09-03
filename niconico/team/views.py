@@ -1,11 +1,9 @@
 import logging
 
-from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
-from rest_framework.response import Response
 
 from .models import Membership
-from .serializers import MembershipSerializer, TeamMoodSerializer, TeamSerializer
+from .serializers import MembershipSerializer, TeamSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -23,28 +21,6 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-    def destroy(self, request, pk=None, *args, **kwargs):
-        """Only team owners can delete a team
-        TODO: Transfer ownership
-        """
-        user = self.request.user
-        teams = user.managed_teams.all()
-        team = get_object_or_404(teams, pk=pk)
-        team.delete()
-        return Response()
-
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        """Team detail view
-        # TODO: Get managed teams!
-        """
-        user = self.request.user
-        teams = user.managed_teams.all()
-        team = get_object_or_404(teams, pk=pk)
-
-        # TODO: Can we group these by dates??
-        serializer = TeamMoodSerializer(team)
-        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
