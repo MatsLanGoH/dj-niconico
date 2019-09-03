@@ -39,6 +39,21 @@ class TeamViewSet(viewsets.ModelViewSet):
         serializer = MembershipSerializer(membership)
         return Response(serializer.data)
 
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="add_mood",
+        url_name="add_mood",
+        permission_classes=[IsActiveUser],
+    )
+    def add_mood(self, request, pk=None, *args, **kwargs):
+        user = self.request.user
+        membership = get_object_or_404(Membership, member=user, team=pk)
+        serializer = MoodSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(owner=user, membership=membership)
+            return Response(serializer.data)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -54,20 +69,6 @@ class MembershipViewSet(viewsets.ReadOnlyModelViewSet):
     paginator = None
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MembershipSerializer
-
-    @action(
-        methods=["POST"],
-        detail=True,
-        url_path="add_mood",
-        url_name="add_mood",
-        permission_classes=[IsActiveUser],
-    )
-    def add_mood(self, request, pk=None, *args, **kwargs):
-        user = self.request.user
-        serializer = MoodSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(owner=user, membership_id=pk)
-            return Response(serializer.data)
 
     def retrieve(self, request, pk=None, *args, **kwargs):
         """Get Team overview for the membership

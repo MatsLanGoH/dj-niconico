@@ -81,6 +81,7 @@ class UserMoodExtraSerializer(serializers.ModelSerializer):
 
     def get_moods(self, obj):
         return MoodSerializer(
+            # TODO:  use repository instead
             obj.moods.filter(membership__team=self.context["membership"].id),
             read_only=True,
             many=True,
