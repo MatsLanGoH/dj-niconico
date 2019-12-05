@@ -9,7 +9,7 @@ cffi==1.12.3
 Click==7.0
 cryptography==2.7
 decorator==4.4.0
-Django==2.2.3
+Django==2.2.8
 django-cors-headers==3.0.2
 django-rest-knox==4.1.0
 djangorestframework==3.10.2
